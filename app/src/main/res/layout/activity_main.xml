@@ -86,20 +86,37 @@
                 android:hint="test..."
                 android:inputType="text" />
 
-            <Button
-                android:id="@+id/submitButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="150dp"
-                android:layout_marginTop="0dp"
-                android:text="Submit" />
-
             <TextView
                 android:id="@+id/Diaries"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="My Diaries"
+                android:textSize="20dp"
                 android:text="" />
+
+            <TextView
+                android:id="@+id/TestTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Test Text View"
+                android:textSize="20dp"
+                android:text="" />
+
+            <EditText
+                android:id="@+id/UpdateOld"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:ems="10"
+                android:hint="My diary ID"
+                android:inputType="text" />
+
+            <EditText
+                android:id="@+id/SearchDiaryField"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:ems="10"
+                android:hint="Search My Diary"
+                android:inputType="text" />
 
             <EditText
                 android:id="@+id/UpdateNew"
@@ -109,13 +126,13 @@
                 android:hint="My new book title"
                 android:inputType="text" />
 
-            <EditText
-                android:id="@+id/UpdateOld"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:ems="10"
-                android:hint="My old book title"
-                android:inputType="text" />
+            <Button
+                android:id="@+id/submitButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="150dp"
+                android:layout_marginTop="0dp"
+                android:text="Submit" />
 
             <Button
                 android:id="@+id/UpdateStudent"
