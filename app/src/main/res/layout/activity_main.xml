@@ -19,53 +19,76 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/StudentName"
-                android:layout_width="match_parent"
-                android:layout_height="65dp"
-                android:ems="10"
-                android:hint="My Name"
-                android:text=""
-                android:textColor="#818181"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+<!--            <EditText-->
+<!--                android:id="@+id/StudentName"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="65dp"-->
+<!--                android:ems="10"-->
+<!--                android:hint="My Name"-->
+<!--                android:text=""-->
+<!--                android:textColor="#818181"-->
+<!--                android:textSize="20sp"-->
+<!--                android:textStyle="bold" />-->
 
             <EditText
-                android:id="@+id/editTitle"
+                android:id="@+id/DiaryIdField"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:ems="10"
-                android:hint="My book title"
+                android:hint="Diary ID"
                 android:inputType="text" />
 
-            <EditText
-                android:id="@+id/editTextDate"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="58dp"
-                android:ems="10"
-                android:hint="Today's date 22-12-2022_01:00"
-                android:inputType="date" />
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/editPageFrom"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:ems="10"
-                android:hint="My page from"
-                android:inputType="number" />
+                <EditText
+                    android:id="@+id/editTextDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="58dp"
+                    android:ems="10"
+                    android:hint="22-12-2022_01:00"
+                    android:inputType="date" />
 
-            <EditText
-                android:id="@+id/editPageTo"
+                <EditText
+                    android:id="@+id/editTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:ems="10"
+                    android:hint="My book title"
+                    android:inputType="text" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:ems="10"
-                android:hint="My page to"
-                android:inputType="number" />
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/editPageFrom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:ems="10"
+                    android:hint="Page from"
+                    android:inputType="number" />
+
+                <EditText
+                    android:id="@+id/editPageTo"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:ems="10"
+                    android:hint="Page to"
+                    android:inputType="number" />
+
+            </LinearLayout>
 
             <EditText
                 android:id="@+id/comments"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="67dp"
                 android:ems="10"
                 android:hint="My comments"
                 android:inputType="text" />
@@ -73,115 +96,141 @@
             <EditText
                 android:id="@+id/commentsTeacher"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="73dp"
                 android:ems="10"
                 android:hint="Teacher's comments"
                 android:inputType="text" />
 
-            <EditText
-                android:id="@+id/testField"
+            <androidx.constraintlayout.widget.Barrier
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:ems="10"
-                android:hint="test..."
-                android:inputType="text" />
+                android:layout_height="match_parent"
+                android:background="#B5B5B5"
+                android:backgroundTint="#8C8C8C"
+                app:barrierDirection="left" />
 
-            <TextView
-                android:id="@+id/Diaries"
+            <androidx.constraintlayout.widget.Barrier
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="My Diaries"
-                android:textSize="20dp"
-                android:text="" />
+                android:layout_height="match_parent"
+                android:background="#A1A1A1"
+                android:backgroundTint="#979797"
+                app:barrierDirection="left" />
 
-            <TextView
-                android:id="@+id/TestTextView"
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Test Text View"
-                android:textSize="20dp"
-                android:text="" />
+                android:layout_height="158dp">
 
-            <EditText
-                android:id="@+id/UpdateOld"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:ems="10"
-                android:hint="My diary ID"
-                android:inputType="text" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/Diaries"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="My Diaries"
+                        android:text=""
+                        android:textSize="20dp" />
+                </LinearLayout>
+            </ScrollView>
+
+            <!--            <EditText-->
+<!--                android:id="@+id/UpdateNew"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="60dp"-->
+<!--                android:ems="10"-->
+<!--                android:hint="My new book title"-->
+<!--                android:inputType="text" />-->
 
             <EditText
                 android:id="@+id/SearchDiaryField"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="74dp"
                 android:ems="10"
-                android:hint="Search My Diary"
-                android:inputType="text" />
-
-            <EditText
-                android:id="@+id/UpdateNew"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:ems="10"
-                android:hint="My new book title"
+                android:hint="Search Diary"
                 android:inputType="text" />
 
             <Button
                 android:id="@+id/submitButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="150dp"
-                android:layout_marginTop="0dp"
-                android:text="Submit" />
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginHorizontal="0dp"
+                android:layout_marginStart="0dp"
+                android:layout_marginEnd="0dp"
+                android:layout_marginBottom="0dp"
+                android:backgroundTint="#3F51B5"
+                android:text="add"
+                android:textColor="@color/white" />
 
             <Button
                 android:id="@+id/UpdateStudent"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Update" />
+                android:layout_height="70dp"
+                android:layout_marginLeft="0dp"
+                android:backgroundTint="#3F51B5"
+                android:text="Update"
+                android:textColor="@color/white" />
 
-            <Button
-                android:id="@+id/DeleteStudent"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Delete" />
+                <Button
+                    android:id="@+id/DeleteStudent"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="0dp"
+                    android:backgroundTint="#C10000"
+                    android:text="Delete"
+                    android:textColor="@color/white" />
 
-            <Button
-                android:id="@+id/GetDiary"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="View My Diary" />
+                android:layout_height="0dp"
+                android:layout_marginTop="10dp"
+                android:gravity="bottom|center"
+                android:orientation="horizontal">
+            </LinearLayout>
 
-            <Button
-                android:id="@+id/emailButton"
+            <androidx.constraintlayout.widget.Barrier
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:backgroundTint="@color/purple_500"
-                android:text="Email"
-                android:textColor="@color/white"
-                android:textSize="20dp"
-                android:textStyle="bold" />
+                android:layout_height="110dp"
+                app:barrierDirection="left" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline2"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:orientation="vertical" />
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginTop="30dp">
+
+                <Button
+                    android:id="@+id/emailButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:backgroundTint="#3F51B5"
+                    android:text="Email"
+                    android:textColor="@color/white"
+                    android:textStyle="bold" />
+            </TableRow>
 
             <Button
                 android:id="@+id/testScreen2"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:backgroundTint="@color/purple_500"
-                android:text="Go To Page"
+                android:layout_height="70dp"
+                android:layout_marginStart="0dp"
+                android:layout_marginEnd="0dp"
+                android:backgroundTint="#3F51B5"
+                android:text="Page 1"
                 android:textColor="@color/white"
-                android:textSize="19dp"
                 android:textStyle="bold" />
 
         </LinearLayout>
     </ScrollView>
 
-    <!--            <EditText-->
-    <!--                android:id="@+id/editTextTime"-->
-    <!--                android:layout_width="match_parent"-->
-    <!--                android:layout_height="60dp"-->
-    <!--                android:ems="10"-->
-    <!--                android:hint="Type time"-->
-    <!--                android:inputType="time" />-->
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

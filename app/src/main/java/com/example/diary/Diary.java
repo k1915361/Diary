@@ -1,31 +1,73 @@
 package com.example.diary;
 
 public class Diary {
-    private String date;
-    private String time;
+    private String id;
     private String title;
-    private String testField;
+    private String datetime;
     private String pageFrom;
     private String pageTo;
     private String comments;
-    private String commentsTeacher;
+    private String teacherComments;
 
-    public String getDate() {
-        return date;
+    public Diary(String id, String title, String datetime, String pageFrom, String pageTo, String comments, String teacherComments){
+        this.id = id;
+        this.title = title;
+        this.datetime = datetime;
+        this.pageFrom = pageFrom;
+        this.pageTo = pageTo;
+        this.comments = comments;
+        this.teacherComments = teacherComments;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public Diary(){;}
+
+    public Diary id(String id) {
+        this.id = id;
+        return this;
     }
 
-    public String getTime() {
-        return time;
+    public Diary title(String title) {
+        this.title = title;
+        return this;
+    }
+    
+    public Diary dateTime(String datetime) {
+        this.datetime = datetime;
+        return this;
+    }
+    
+    public Diary pageFrom(String pageFrom) {
+        this.pageFrom = pageFrom;
+        return this;
+    }
+    
+    public Diary pageTo(String pageTo) {
+        this.pageTo = pageTo;
+        return this;
+    }
+    
+    public Diary comments(String comments) {
+        this.comments = comments;
+        return this;
+    }
+    
+    public Diary teacherComments(String teacherComments) {
+        this.teacherComments = teacherComments;
+        return this;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public String getId() {
+        return id;
     }
 
+    public String getDateTime() {
+        return datetime;
+    }
+
+    public void setDateTime(String datetime) {
+        this.datetime = datetime;
+    }
+    
     public String getTitle() {
         return title;
     }
@@ -42,20 +84,12 @@ public class Diary {
         this.pageFrom = pageFrom;
     }
 
-    public String getCommentsTeacher() {
-        return commentsTeacher;
+    public String getTeacherComment() {
+        return teacherComments;
     }
 
-    public void setCommentsTeacher(String commentsTeacher) {
-        this.commentsTeacher = commentsTeacher;
-    }
-
-    public String getTestField() {
-        return testField;
-    }
-
-    public void setTestField(String testField) {
-        this.testField = testField;
+    public void setTeacherComment(String teacherComments) {
+        this.teacherComments = teacherComments;
     }
 
     public String getPageTo() {
@@ -73,4 +107,15 @@ public class Diary {
     public void setComments(String comments) {
         this.comments = comments;
     }
+
+    public String toString(){
+        return id
+        +" "+ title
+        +" "+ datetime
+        +" "+ pageFrom
+        +" "+ pageTo
+        +" "+ comments
+        +" "+ teacherComments;
+    }
+
 }
