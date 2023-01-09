@@ -2,40 +2,24 @@ package com.example.diary;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.Settings;
 import android.text.Editable;
-import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CalendarView;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
-import android.widget.RadioButton;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.Calendar;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Objects;
-import java.util.Optional;
 
 // lecture 5 & 7 & 9
 public class MainActivity extends AppCompatActivity {
@@ -46,11 +30,12 @@ public class MainActivity extends AppCompatActivity {
     EditText comments;
     EditText commentsTeacher;
     Diary diary;
-    TextView diaries;
+    TextView diaryView;
     EditText diaryId;
     EditText search;
-    myDbAdapterDiary helperDiary;
-    static myDbAdapterDiary HELPER;
+    ScrollView diaryScrollView;
+    DiaryDbAdapter helper;
+    static DiaryDbAdapter HELPER;
     Button submit;
     Button deleteBtn;
     Button updateBtn;
@@ -77,41 +62,26 @@ public class MainActivity extends AppCompatActivity {
         pageTo = findViewById(R.id.editPageTo);
         datetime = findViewById(R.id.editTextDate);
         comments = findViewById(R.id.comments);
-        commentsTeacher = findViewById(R.id.commentsTeacher);
-        diaries = findViewById(R.id.Diaries);
-        diaryId = findViewById(R.id.DiaryIdField);
+        commentsTeacher = findViewById(R.id.teacherComments);
+        diaryView = findViewById(R.id.diaryView2);
+        diaryId = findViewById(R.id.diaryId);
         search = (EditText) findViewById(R.id.SearchDiaryField);
-        helperDiary = new myDbAdapterDiary(this);
-        HELPER = new myDbAdapterDiary(this);
-        submit = (Button) findViewById(R.id.submitButton);
-        updateBtn = (Button) findViewById(R.id.UpdateStudent);
-        deleteBtn = (Button) findViewById(R.id.DeleteStudent);
-        testScreen2 = (Button) findViewById(R.id.testScreen2);
-        emailButton = (Button) findViewById(R.id.emailButton);
+        helper = new DiaryDbAdapter(this);
+        HELPER = new DiaryDbAdapter(this);
+        submit = (Button) findViewById(R.id.addBtn);
+        updateBtn = (Button) findViewById(R.id.updateBtn);
+        deleteBtn = (Button) findViewById(R.id.deleteBtn);
+        testScreen2 = (Button) findViewById(R.id.searchScrBtn);
+        emailButton = (Button) findViewById(R.id.emailScrBtn);
         diary = new Diary();
-        datetime.setText(currentDateTime());
         datetime.setHint(currentDateTime());
+        datetime.setText(currentDateTime());
         viewSelectedDiary();
-
+        Log.d(TAG, text(diaryView));
         emailButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 emailBtnPressed();
-//                String mailStr = "a@gmail.com";
-//                String subject = "Diary Data";
-//                String body = DiaryCSVHeader+"\n";
-//                body += helperDiary.getDataOfficialFormat();
-//                Intent intent = new Intent(Intent.ACTION_SENDTO);
-//                intent.setData(Uri.parse("mailto:"));
-//                intent.putExtra(Intent.EXTRA_EMAIL, new String[]{ mailStr });
-//                intent.putExtra(Intent.EXTRA_SUBJECT, subject);
-//                intent.putExtra(Intent.EXTRA_TEXT,body);
-//                if (intent.resolveActivity(getPackageManager()) != null) {
-//                    startActivity(intent);
-//                } else {
-//                    Toast error = Toast.makeText(getApplicationContext()/*this*/, "No email app installed!", Toast.LENGTH_LONG);
-//                    error.show();
-//                }
             }
         });
         submit.setOnClickListener(new View.OnClickListener() {
@@ -138,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         testScreen2.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                testScreen2ButtonPressed(v);
+                searchScrnBtnPressed(v);
             }
         });
         search.addTextChangedListener(new TextWatcher(){
@@ -160,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-//        viewDiary.performClick();
+        search.performClick();
     }
 
     public static String currentDateTime(){
@@ -182,13 +152,12 @@ public class MainActivity extends AppCompatActivity {
                 +Helper.nullToStr(p4,"pageTo ")
                 +Helper.nullToStr(p5,"comments ")
                 +Helper.nullToStr(p6,"TeacherComments ");
-
         if(p1.isEmpty() || p2.isEmpty() || p3.isEmpty() || p4.isEmpty() || p5.isEmpty() || p6.isEmpty()){
             Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
         }
         else
         {
-            long id = helperDiary.insertData(p1,p2,p3,p4,p5,p6);
+            long id = helper.insertData(p1,p2,p3,p4,p5,p6);
             if(id <= 0){
                 Toast.makeText(this, "Insertion Unsuccessful", Toast.LENGTH_LONG).show();
             }
@@ -200,14 +169,19 @@ public class MainActivity extends AppCompatActivity {
         viewSelectedDiary(view);
     }
 
+    public void viewDiaryOnStartUp(View view){
+        String data = helper.getData();
+        diaryView.setText(DiaryViewHeader+data);
+    }
+
     public void viewSelectedDiary(View view){
-        String data = helperDiary.getData();
-        diaries.setText(DiaryViewHeader+data);
+        String data = helper.getData();
+        diaryView.setText(data);
     }
 
     public void viewSelectedDiary(){
-        String data = helperDiary.getData();
-        diaries.setText(DiaryViewHeader+data);
+        String data = helper.getData();
+        diaryView.setText(data);
     }
 
     public void bringBackPreviousInputs(){
@@ -220,8 +194,13 @@ public class MainActivity extends AppCompatActivity {
         commentsTeacher.setText(previousCommentsTeacher);
     }
 
+    /*
+        Auto-fills the user entries when a previous record is selected
+        Remembers all user inputs before autofill
+        Just empty the search field then automatically brings back.
+     */
     public void autoFill(){
-        Diary d = helperDiary.getDiaryById(text(search));
+        Diary d = helper.getDiaryById(text(diaryId)); //search
         if(d != null){
             previousId = text(diaryId);
             previousTitle = text(title);
@@ -247,33 +226,12 @@ public class MainActivity extends AppCompatActivity {
         confirmDialog();
     }
 
-    public void delete(View view) {
-        String id = text(search);
-        Toast.makeText(this, "isYes 0 "+isYes, Toast.LENGTH_LONG).show();
-        if(id.isEmpty() || isYes == 0) {
-            Toast.makeText(this, "Enter Data", Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(this, "isYes 0 "+isYes, Toast.LENGTH_LONG).show();
-//            int a = helperDiary.deleteById(id);
-            int a=1;
-            if(a <= 0) {
-                Toast.makeText(this, "Unsuccessful", Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(this, "DELETED", Toast.LENGTH_LONG).show();
-                search.setText("");
-            }
-            isYes = 0;
-        }
-        Toast.makeText(this, "isYes 0 "+isYes, Toast.LENGTH_LONG).show();
-        isYes = 0;
-    }
-
-    public void delete() {
+    public void delete(View... view) {
         String id = text(search);
         if(id.isEmpty() || isYes == 0) {
             Toast.makeText(this, "Enter Data", Toast.LENGTH_LONG).show();
         } else {
-            int a = helperDiary.deleteById(id);
+            int a = helper.deleteById(id);
             if(a <= 0) {
                 Toast.makeText(this, "Unsuccessful", Toast.LENGTH_LONG).show();
             } else {
@@ -297,38 +255,132 @@ public class MainActivity extends AppCompatActivity {
         .setNegativeButton(android.R.string.no, null).show();
     }
 
-    public void viewDiaryById(View view) {
-        String id = search.getText().toString();
-        String diariesStr = diaries.getText().toString();
-        String isDiariesViewEmpty = diariesStr.substring(0,1);
+    /*  Search by pageRange eg 3 6
+        search by Ids eg 3,6,9
+        search by book, date, comments
 
-        if(id.isEmpty()){
-            Toast.makeText(this, "Enter ID", Toast.LENGTH_LONG).show();
-            viewSelectedDiary(view);
+        Sample data
+        1 Mars              07-01-2023_00:35 3 4    my comments and rating +++++  teacher's comments
+        2 Man in the mirror 07-01-2023_00:35 1 9    my rating +++++  t
+        3 The Glory         07-01-2023_00:35 1 9    my rating +++++  t
+        4 Charlie Chaplin   07-01-2023_00:35 1 88   my rating ++++  t
+        5 The mice and man  07-01-2023_00:35 1 1    my rating +++  t
+        6 The cat in boots  07-01-2023_00:35 1 1    my rating ++  t
+        7 The fairy tale    06-01-2023_23:30 1 99   my rating + t
+    */
+    public void viewDiaryBySearchAny(View... view) {
+        String sch = text(search);
+        getSelectedIds();
+        if(sch.isEmpty()){
+            viewSelectedDiary();
         } else {
-            String data = helperDiary.getById(id);
-            if (data.isEmpty()){
-                viewSelectedDiary(view);
-                Toast.makeText(this, "No Diary found with the ID", Toast.LENGTH_SHORT).show();
+            String data = "";
+            data = helper.selectByPageRange(sch);
+            if(data.isEmpty()){
+                data = helper.selectByIds(sch);
+            }
+            if(data.isEmpty() && Helper.isInt(sch)) {
+                data = helper.getById(sch);
+            }
+            if(data.isEmpty()) {
+                data = helper.searchAny(sch);
+            }
+            if(data.isEmpty()){
+                viewSelectedDiary();
             } else {
-                diaries.setText(DiaryViewHeader+data);
+                diaryView.setText(data);
+                int idx = data.indexOf(" ");
+                String id = data.split(" ")[0];
+                id = data.substring(0, idx);
+                id = Helper.idOfRecord(data);
+                diaryId.setText(id);
             }
         }
     }
 
-    public void viewDiaryBySearchAny() {
-        String srch = search.getText().toString();
-
-        if(srch.isEmpty()){
+    public String getDiarySelectedInFormat(){
+        String sch = text(search);
+        String data ="";
+        if(sch.isEmpty()){
             viewSelectedDiary();
         } else {
-            String data = helperDiary.searchAny(srch);
-            if (data.isEmpty()){
-                viewSelectedDiary();
+            data = helper.getCsvByIds(sch);
+            Helper.toast(this, ""+data);
+            if(!data.isEmpty()) return data;
+            if(data.isEmpty() && Helper.isInt(sch)) {
+                data = helper.getByIdInFormat(sch);
+            }
+            if(data.isEmpty()){
+                data = helper.selectByPageRange(sch);
+            }
+            if(data.isEmpty()) {
+                data = helper.searchAnyInFormat(sch);
             } else {
-                diaries.setText(DiaryViewHeader+data);
+                return data;
+            }
+            if(!data.isEmpty()) {
+                return data;
             }
         }
+        return helper.getDataInFormat();
+    }
+
+    public String getSelectedIds(){
+        String diary = text(diaryView);
+        String[] records = diary.split("\n");
+        String ids = "";
+        for (int i=0; i<records.length; i++){
+            records[i] = Helper.idOfRecord(records[i]);
+        }
+        ids = Arrays.toString(records);
+        ids = ids.replace("[","").replace("]","");
+        return ids;
+    }
+
+    public String testPlayground(){
+        String sch = text(search);
+        String data ="";
+        if(sch.isEmpty()){
+            viewSelectedDiary();
+        } else {
+            data = helper.getCsvByIds(sch);
+            Helper.toast(this, ""+data);
+            if(!data.isEmpty()) return data;
+            if(data.isEmpty() && Helper.isInt(sch)) {
+                data = helper.getByIdInFormat(sch);
+            }
+            if(data.isEmpty()) {
+                data = helper.searchAnyInFormat(sch);
+            } else {
+                return data;
+            }
+            if(!data.isEmpty()) {
+                return data;
+            }
+        }
+        return helper.getDataInFormat();
+    }
+
+    public String getSearchDiary() {
+        String sch = search.getText().toString();
+        if(sch.isEmpty()){
+            viewSelectedDiary();
+        } else {
+            String data = "";
+            data = helper.selectByIds(sch);
+            if(data.isEmpty() && Helper.isInt(sch)) {
+                data = helper.getById(sch);
+            }
+            if(data.isEmpty()) {
+                data = helper.searchAny(sch);
+            }
+            if (data.isEmpty()){
+                return helper.getDataOfficialFormat();
+            } else {
+                return data;
+            }
+        }
+        return "";
     }
 
     public void update(View view){
@@ -354,7 +406,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else
         {
-            int a = helperDiary.updateDiary(id, u1, u2, u3, u4, u5, u6);
+            int a = helper.updateDiary(id, u1, u2, u3, u4, u5, u6);
             if(a <= 0)
             {
                 Toast.makeText(this, "Unsuccessful", Toast.LENGTH_LONG).show();
@@ -374,17 +426,19 @@ public class MainActivity extends AppCompatActivity {
         return Helper.text(e);
     }
 
-    public void testScreen2ButtonPressed(View view){
-        Intent screen = new Intent(this, ProjectActivity.class);
-        String drs = text(diaries);
+    public void searchScrnBtnPressed(View view){
+        Intent screen = new Intent(this, SearchActivity.class);
+        String drs = text(diaryView);
         screen.putExtra("nameChosen", drs);
         startActivityForResult(screen, 3);
     }
 
     public void emailBtnPressed(){
         Intent screen = new Intent(this, EmailActivity.class);
-        String diriess = text(diaries);
-        screen.putExtra("nameChosen", diriess);
+        String data = getDiarySelectedInFormat();
+        String ids = getSelectedIds();
+        screen.putExtra("diarySelected", data);
+        screen.putExtra("diaryIdsSelected", ids);
         startActivityForResult(screen, 3);
     }
 
@@ -392,7 +446,7 @@ public class MainActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
         String reply = data.getStringExtra("ReturnedMessage");
-        diaries.setText("From Screen2: "+reply+"");
+        search.setText(reply);
     }
 
     public void emailAppChooser(Intent emailIntent){

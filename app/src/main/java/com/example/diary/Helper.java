@@ -1,21 +1,25 @@
 package com.example.diary;
 
+import android.content.Context;
 import android.content.Intent;
 import android.text.Editable;
 import android.util.Log;
 import android.widget.CalendarView;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 public class Helper {
     static final String TAG = "Helper";
@@ -59,7 +63,7 @@ public class Helper {
         boolean hasText = drs.contains(search);
         int indexOfSearch = drs.indexOf(""+search);
         String searchResult = drs.substring(Helper.negativeToDefault(indexOfSearch,0));
-        if(search.length() != 0) {
+        if(!search.isEmpty()) {
             view.setText(MessageFormat.format("{0}\n{1}{2}\n{3}\n{4}"
                     , drs.length(), indexOfSearch, indexOfSearch == -1 ? "\nNo Search Result" : ""
                     , searchResult, Helper.nullToStr(null, "replaced")));
@@ -113,22 +117,69 @@ public class Helper {
 
     public static String orElseStr(Object o, String defaultValue) {
         try{
-            defaultValue = o.toString();
+            if(o.toString().isEmpty()) return o.toString();
+            if(o != null) return o.toString();
+            if(o.toString().length() != 0) return o.toString();
         } catch(Exception e){
             Log.d(TAG,""+e);
         }
         return defaultValue;
     }
 
-    public static Object isNull(Object o, Object defaultValue){
+    public static String orElseStr(String o, String defaultValue) {
         try{
-            if(o == null) return "1"+defaultValue;
-            else if(o.toString().length() == 0) return defaultValue;
-            else if(o.toString().isEmpty()) return "2"+defaultValue;
+            if(o.isEmpty()) return defaultValue;
+            if(o != null) return defaultValue;
+            if(o.length() != 0) return defaultValue;
+            defaultValue = o;
         } catch(Exception e){
             Log.d(TAG,""+e);
         }
-        return "";
+        return defaultValue;
+    }
+
+    public static boolean isNull(Object o){
+        try{
+            if(o.toString().isEmpty()) return true;
+        } catch(Exception e){
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isNull(String o){
+        try{
+            if(o.isEmpty()) return true;
+        } catch(Exception e){
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isBlank(String o){
+        if(o == null || o.trim().isEmpty())
+            return false;
+        return true;
+    }
+
+    public static boolean isInt(Object o){
+        if (o == null) return false;
+        try{
+            Integer.parseInt(o.toString());
+        } catch(Exception e){
+            return false;
+        }
+        return false;
+    }
+
+    public static boolean isNumeric(String s){
+        if(s == null) return false;
+        try {
+            double d = Double.parseDouble(s);
+        } catch (NumberFormatException exception) {
+            return false;
+        }
+        return true;
     }
 
     public static int negativeToDefault(int num, int defaultValue) {
@@ -153,6 +204,29 @@ public class Helper {
             System.out.println("Could not parse " + nfe);
         }
         return myNum;
+    }
+
+    public static String toStr(String[][] arr){
+        StringBuilder str = new StringBuilder();
+        try {
+            str.append(Arrays.deepToString(arr));
+//            for (String[] s : arr){
+//                str.append(Arrays.toString(s)).append(",");
+//            }
+        } catch(NumberFormatException nfe) {
+            return "";
+        }
+        return str.toString();
+    }
+
+    public String toStr(String[] arr){
+        String str;
+        try {
+            str = Arrays.toString(arr);
+        } catch(NumberFormatException nfe) {
+            return "";
+        }
+        return str;
     }
 
     public void calendarViewOnDateChangeListener() {
@@ -190,5 +264,29 @@ public class Helper {
 
     public void accessFilespermission () {
         ;
+    }
+
+    public static void toast(Context cnt, Object msg){
+        Toast.makeText(cnt, ""+msg, Toast.LENGTH_SHORT).show();
+    }
+
+    public static boolean isMatches(String src, String dst){
+        return Pattern.compile(Pattern.quote(dst), Pattern.CASE_INSENSITIVE)
+                .matcher(src)
+                .find();
+    }
+
+    public static String repeat(int count, String with) {
+        return new String(new char[count]).replace("\0", with);
+    }
+
+    public static String format(String id,String title,String datetime,String pageFrom,String pageTo,String comments,String teacherComments) {
+        return String.format("%s%15s%15s%15s%15s%15s%15s\n",id, title, datetime, pageFrom, pageTo, comments, teacherComments);
+    }
+
+    public static String idOfRecord(String str){
+        int idx = str.indexOf(" ");
+        String id = str.substring(0, idx);
+        return id;
     }
 }

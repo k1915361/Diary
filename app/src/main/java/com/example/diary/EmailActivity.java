@@ -11,7 +11,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,31 +22,77 @@ public class EmailActivity extends AppCompatActivity{
     EditText bodyEdit;
     EditText subjectEdit;
     EditText emailEdit;
-    Button emailButton;
+    TextView diaryView;
+    Button emailBtn;
+//    Button csvBtn;
+//    Button jsonBtn;
+    CheckBox csvBtn;
+    CheckBox jsonBtn;
     String email = "a@gmail.com";
-    String subject = "Diary Data Report";
+    String subject = "Diary Data";
     String body = "\n";
+    String ids;
     final String DiaryCSVHeader = "id,title,datetime,pageFrom,pageTo,comments,teacherComments";
+    static final DiaryDbAdapter DB = MainActivity.HELPER;
+    String jsonData;
+    String csvData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mail);
-        emailButton = (Button) findViewById(R.id.emailButton2);
+        emailBtn = (Button) findViewById(R.id.emailButton2);
+//        csvBtn = (Button) findViewById(R.id.csvBtn);
+//        jsonBtn = (Button) findViewById(R.id.jsonBtn);
+        csvBtn = (CheckBox) findViewById(R.id.csvBtn);
+        jsonBtn = (CheckBox) findViewById(R.id.jsonBtn);
         emailEdit = (EditText) findViewById(R.id.emailEdit);
         bodyEdit = (EditText) findViewById(R.id.bodyEdit);
         subjectEdit = (EditText) findViewById(R.id.subjectEdit);
+        diaryView = findViewById(R.id.diaryDataPreview);
         emailEdit.setHint(email);
         subjectEdit.setHint(subject);
-        bodyEdit.setHint(body+DiaryCSVHeader+"\n"+MainActivity.HELPER.getDataOfficialFormat());
-        emailButton.setOnClickListener(new View.OnClickListener(){
+        bodyEdit.setHint("Email body");
+//        diaryView.setText(DiaryCSVHeader+"\n"+MainActivity.HELPER.getDataOfficialFormat());
+        String reply = getIntent().getStringExtra("diarySelected");
+        ids = getIntent().getStringExtra("diaryIdsSelected");
+        diaryView.setText(DiaryCSVHeader+"\n"+reply);
+        jsonData = new StringBuilder().append(DB.getJsonByIds(ids)).append("\n").toString();
+        csvData = new StringBuilder().append(DiaryCSVHeader).append("\n").append(DB.getCsvByIds(ids)).append("\n").toString();
+
+        csvBtn.setChecked(true);
+//        csvBtn.performClick();
+        csvBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(csvBtn.isChecked() && jsonBtn.isChecked()) {
+                    diaryView.setText(new StringBuilder().append(csvData).append("\n").append(jsonData).toString());
+                }
+                else if(isFormatChecked()) {;}
+                else {
+                    jsonBtn.performClick();
+                }
+            }
+        });
+        jsonBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(jsonBtn.isChecked() && csvBtn.isChecked()) {
+                    diaryView.setText(new StringBuilder().append(jsonData).append("\n").append(csvData).toString());
+                }
+                else if(isFormatChecked()) {;}
+                else {
+                    csvBtn.performClick();
+                }
+            }
+        });
+        emailBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 email = (Helper.orElseStr(Helper.text(emailEdit),"a@gmail.com"));
                 subject = (Helper.orElseStr(Helper.text(subjectEdit),"Diary Data Report"));
                 body = Helper.text(bodyEdit);
-                body += DiaryCSVHeader+"\n";
-                body += MainActivity.HELPER.getDataOfficialFormat();
+                body = Helper.text(diaryView);
                 Intent intent = new Intent(Intent.ACTION_SENDTO);
                 intent.setData(Uri.parse("mailto:"));
                 intent.putExtra(Intent.EXTRA_EMAIL, new String[]{ email });
@@ -53,11 +101,24 @@ public class EmailActivity extends AppCompatActivity{
                 if (intent.resolveActivity(getPackageManager()) != null) {
                     startActivity(intent);
                 } else {
+                    startActivity(Intent.createChooser(intent, "Send mail..."));
                     Toast error = Toast.makeText(getApplicationContext(), "No email app installed!", Toast.LENGTH_LONG);
                     error.show();
                 }
             }
         });
+    }
+
+    public boolean isFormatChecked(){
+        if(csvBtn.isChecked()) {
+            diaryView.setText(csvData);
+            return true;
+        }
+        else if(jsonBtn.isChecked()) {
+            diaryView.setText(jsonData);
+            return true;
+        }
+        return false;
     }
 
     public void ReturnButtonPressed(View view) {
