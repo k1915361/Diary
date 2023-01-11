@@ -1,7 +1,6 @@
 package com.example.diary;
 
 import android.content.Context;
-import android.content.Intent;
 import android.text.Editable;
 import android.util.Log;
 import android.widget.CalendarView;
@@ -62,11 +61,11 @@ public class Helper {
         String drs = text(edt);
         boolean hasText = drs.contains(search);
         int indexOfSearch = drs.indexOf(""+search);
-        String searchResult = drs.substring(Helper.negativeToDefault(indexOfSearch,0));
+        String searchResult = drs.substring(negativeToDefault(indexOfSearch,0));
         if(!search.isEmpty()) {
             view.setText(MessageFormat.format("{0}\n{1}{2}\n{3}\n{4}"
                     , drs.length(), indexOfSearch, indexOfSearch == -1 ? "\nNo Search Result" : ""
-                    , searchResult, Helper.nullToStr(null, "replaced")));
+                    , searchResult, nullToStr(null, "replaced")));
         }
     }
 
@@ -86,7 +85,13 @@ public class Helper {
     }
 
     public static String text(TextView e){
-        return e.getText().toString();
+        String s;
+        try{
+            s = e.getText().toString();
+        }catch(Exception ex){
+            return "";
+        }
+        return s;
     }
 
     public String orElse(EditText text){
@@ -162,16 +167,6 @@ public class Helper {
         return true;
     }
 
-    public static boolean isInt(Object o){
-        if (o == null) return false;
-        try{
-            Integer.parseInt(o.toString());
-        } catch(Exception e){
-            return false;
-        }
-        return false;
-    }
-
     public static boolean isNumeric(String s){
         if(s == null) return false;
         try {
@@ -180,6 +175,21 @@ public class Helper {
             return false;
         }
         return true;
+    }
+
+    public static boolean isEmpty(EditText editTxt){
+        if(text(editTxt).isEmpty()) return true;
+        return false;
+    }
+
+    public static boolean isEmpty(TextView txtView){
+        if(text(txtView).isEmpty()) return true;
+        return false;
+    }
+
+    public static boolean isEmpty(String str){
+        if(str.isEmpty()) return true;
+        return false;
     }
 
     public static int negativeToDefault(int num, int defaultValue) {
@@ -210,9 +220,6 @@ public class Helper {
         StringBuilder str = new StringBuilder();
         try {
             str.append(Arrays.deepToString(arr));
-//            for (String[] s : arr){
-//                str.append(Arrays.toString(s)).append(",");
-//            }
         } catch(NumberFormatException nfe) {
             return "";
         }

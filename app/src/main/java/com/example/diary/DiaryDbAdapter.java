@@ -1,5 +1,6 @@
 package com.example.diary;
 
+import static com.example.diary.Helper.*;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -187,7 +188,7 @@ public class DiaryDbAdapter {
 
     public String selectByPageRange(String str){
         String[] whereArgs = str.split(" ");
-        if(whereArgs.length <= 1 || !Helper.isNumeric(whereArgs[0]) || !Helper.isNumeric(whereArgs[1])) return "";
+        if(whereArgs.length <= 1 || !isNumeric(whereArgs[0]) || !isNumeric(whereArgs[1])) return "";
         Cursor cursor = selectByPageRange_Cursor(str);
         return cursorToStr(cursor);
     }
@@ -197,7 +198,7 @@ public class DiaryDbAdapter {
         String whereClause = myDbHelper.ID + " IN (? ";
         String[] whereArgs = {};
         whereArgs = str.split(",",0);
-        whereClause += Helper.repeat(whereArgs.length-1, ",?");
+        whereClause += repeat(whereArgs.length-1, ",?");
         if(str != null) {}
         whereClause += ")";
         Cursor cursor = db.query(myDbHelper.TABLE_NAME, myDbHelper.ALL_COLUMNS, whereClause, whereArgs,null,null,null);
@@ -224,7 +225,7 @@ public class DiaryDbAdapter {
         String whereClause = myDbHelper.ID + " IN (? ";
         String[] whereArgs = {};
         whereArgs = str.split(",",0);
-        whereClause += Helper.repeat(whereArgs.length-1, ",?");
+        whereClause += repeat(whereArgs.length-1, ",?");
         if(str != null) {}
         whereClause += ")";
         Cursor cursor = db.query(myDbHelper.TABLE_NAME, myDbHelper.ALL_COLUMNS, whereClause, whereArgs,null,null,null);
@@ -266,17 +267,17 @@ public class DiaryDbAdapter {
             try {
                 db.execSQL(CREATE_TABLE);
             } catch (Exception e) {
-                Helper.toast(context, ""+e);
+                toast(context, ""+e);
             }
         }
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             try {
-                Helper.toast(context, "OnUpgrade");
+                toast(context, "OnUpgrade");
                 db.execSQL(DROP_TABLE);
                 onCreate(db);
             } catch(Exception e){
-                Helper.toast(context, ""+e);
+                toast(context, ""+e);
             }
         }
     }

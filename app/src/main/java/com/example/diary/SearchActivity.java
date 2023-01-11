@@ -7,6 +7,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import static com.example.diary.Helper.*;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -40,7 +41,11 @@ public class SearchActivity extends AppCompatActivity {
             viewSelectedDiary();
         } else {
             String data = "";
-            if(Helper.isInt(srch)) {
+            data = MainActivity.HELPER.selectByPageRange(srch);
+            if(data.isEmpty()){
+                data = MainActivity.HELPER.selectByIds(srch);
+            }
+            if(data.isEmpty()) {
                 data = MainActivity.HELPER.getById(srch);
             }
             if(data.isEmpty()) {
@@ -61,7 +66,7 @@ public class SearchActivity extends AppCompatActivity {
 
     public void ReturnButtonPressed(View view) {
         String strExtra = getIntent().getStringExtra("searched");
-        String ReturnMessage = Helper.text(search);
+        String ReturnMessage = text(search);
         Intent replyIntent = new Intent();
         replyIntent.putExtra("ReturnedMessage", ReturnMessage);
         setResult(RESULT_OK, replyIntent);

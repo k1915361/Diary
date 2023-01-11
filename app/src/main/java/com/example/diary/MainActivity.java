@@ -1,5 +1,7 @@
 package com.example.diary;
 
+import static com.example.diary.Helper.*;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -39,15 +41,15 @@ public class MainActivity extends AppCompatActivity {
     Button submit;
     Button deleteBtn;
     Button updateBtn;
-    Button testScreen2;
+    Button searchScrBtn;
     Button emailButton;
-    String previousId;
-    String previousTitle;
-    String previousDatetime;
-    String previousPageFrom;
-    String previousPageTo;
-    String previousComments;
-    String previousCommentsTeacher;
+    String previousId = "";
+    String previousTitle = "";
+    String previousDatetime = "";
+    String previousPageFrom = "";
+    String previousPageTo = "";
+    String previousComments = "";
+    String previousCommentsTeacher = "";
     int isYes = 0;
     final String DiaryViewHeader = "ID Title Date Page Comments TeacherComments\n";
     final String DiaryCSVHeader = "id,title,datetime,pageFrom,pageTo,comments,teacherComments";
@@ -71,13 +73,77 @@ public class MainActivity extends AppCompatActivity {
         submit = (Button) findViewById(R.id.addBtn);
         updateBtn = (Button) findViewById(R.id.updateBtn);
         deleteBtn = (Button) findViewById(R.id.deleteBtn);
-        testScreen2 = (Button) findViewById(R.id.searchScrBtn);
+        searchScrBtn = (Button) findViewById(R.id.searchScrBtn);
         emailButton = (Button) findViewById(R.id.emailScrBtn);
         diary = new Diary();
         datetime.setHint(currentDateTime());
         datetime.setText(currentDateTime());
+        previousDatetime = text(datetime);
         viewSelectedDiary();
         Log.d(TAG, text(diaryView));
+        diaryId.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override public void afterTextChanged(Editable editable) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if(isEmpty(search))
+                    previousId = charSequence.toString();
+            }
+        });
+        title.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override public void afterTextChanged(Editable editable) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if(isEmpty(search))
+                    previousTitle = charSequence.toString();
+            }
+        });
+        datetime.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override public void afterTextChanged(Editable editable) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if(isEmpty(search))
+                    previousDatetime = charSequence.toString();
+            }
+        });
+        pageFrom.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override public void afterTextChanged(Editable editable) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if(isEmpty(search))
+                    previousPageFrom = charSequence.toString();
+            }
+        });
+        pageTo.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override public void afterTextChanged(Editable editable) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if(isEmpty(search))
+                    previousPageTo = charSequence.toString();
+            }
+        });
+        comments.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override public void afterTextChanged(Editable editable) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if(isEmpty(search))
+                    previousComments = charSequence.toString();
+            }
+        });
+        commentsTeacher.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override public void afterTextChanged(Editable editable) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if(isEmpty(search))
+                    previousCommentsTeacher = charSequence.toString();
+            }
+        });
         emailButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -101,28 +167,20 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v){
                 deletePressed(v);
-                viewSelectedDiary(v);
             }
         });
-
-        testScreen2.setOnClickListener(new View.OnClickListener(){
+        searchScrBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
                 searchScrnBtnPressed(v);
             }
         });
         search.addTextChangedListener(new TextWatcher(){
-            @Override
-            public void afterTextChanged(Editable s) {;}
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int before, int count) {;}
+            @Override public void afterTextChanged(Editable s) {;}
+            @Override public void beforeTextChanged(CharSequence s, int start, int before, int count) {;}
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                autoFill();
                 viewDiaryBySearchAny();
-                if(text(search) == null){
-                    bringBackPreviousInputs();
-                }
             }
         });
     }
@@ -146,12 +204,12 @@ public class MainActivity extends AppCompatActivity {
         String p5 = comments.getText().toString();
         String p6 = commentsTeacher.getText().toString();
         String msg = "Enter "
-                +Helper.nullToStr(p1,"title ")
-                +Helper.nullToStr(p2,"datetime ")
-                +Helper.nullToStr(p3,"pageFrom ")
-                +Helper.nullToStr(p4,"pageTo ")
-                +Helper.nullToStr(p5,"comments ")
-                +Helper.nullToStr(p6,"TeacherComments ");
+                +nullToStr(p1,"title ")
+                +nullToStr(p2,"datetime ")
+                +nullToStr(p3,"pageFrom ")
+                +nullToStr(p4,"pageTo ")
+                +nullToStr(p5,"comments ")
+                +nullToStr(p6,"TeacherComments ");
         if(p1.isEmpty() || p2.isEmpty() || p3.isEmpty() || p4.isEmpty() || p5.isEmpty() || p6.isEmpty()){
             Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
         }
@@ -167,11 +225,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         viewSelectedDiary(view);
-    }
-
-    public void viewDiaryOnStartUp(View view){
-        String data = helper.getData();
-        diaryView.setText(DiaryViewHeader+data);
     }
 
     public void viewSelectedDiary(View view){
@@ -202,14 +255,6 @@ public class MainActivity extends AppCompatActivity {
     public void autoFill(){
         Diary d = helper.getDiaryById(text(diaryId)); //search
         if(d != null){
-            previousId = text(diaryId);
-            previousTitle = text(title);
-            previousDatetime = text(datetime);
-            previousPageFrom = text(pageFrom);
-            previousPageTo = text(pageTo);
-            previousComments = text(comments);
-            previousCommentsTeacher = text(commentsTeacher);
-            if(text(diaryId).isEmpty());
             diaryId.setText(d.getId());
             title.setText(d.getTitle());
             datetime.setText(d.getDateTime());
@@ -217,10 +262,9 @@ public class MainActivity extends AppCompatActivity {
             pageTo.setText(d.getPageTo());
             comments.setText(d.getComments());
             commentsTeacher.setText(d.getTeacherComment());
-        } else {
-            bringBackPreviousInputs();
         }
     }
+
 
     public void deletePressed(View view) {
         confirmDialog();
@@ -236,6 +280,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Unsuccessful", Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(this, "DELETED", Toast.LENGTH_LONG).show();
+                viewSelectedDiary();
                 search.setText("");
             }
         }
@@ -255,45 +300,43 @@ public class MainActivity extends AppCompatActivity {
         .setNegativeButton(android.R.string.no, null).show();
     }
 
-    /*  Search by pageRange eg 3 6
+    /*  Search by pageRange eg 1 88
         search by Ids eg 3,6,9
         search by book, date, comments
 
         Sample data
         1 Mars              07-01-2023_00:35 3 4    my comments and rating +++++  teacher's comments
-        2 Man in the mirror 07-01-2023_00:35 1 9    my rating +++++  t
-        3 The Glory         07-01-2023_00:35 1 9    my rating +++++  t
-        4 Charlie Chaplin   07-01-2023_00:35 1 88   my rating ++++  t
-        5 The mice and man  07-01-2023_00:35 1 1    my rating +++  t
-        6 The cat in boots  07-01-2023_00:35 1 1    my rating ++  t
-        7 The fairy tale    06-01-2023_23:30 1 99   my rating + t
+        2 Man in the mirror 07-01-2023_00:35 2 9    my rating +++++  teacherA
+        3 The Glory         07-01-2023_00:35 3 9    my rating +++++  teacherB
+        4 Charlie Chaplin   07-01-2023_00:35 4 88   my rating ++++  teacherC
+        5 The mice and man  07-01-2023_00:35 5 6    my rating +++  teacherD
+        6 The cat in boots  07-01-2023_00:35 6 7    my rating ++  teacherE
+        7 The fairy tale    06-01-2023_23:30 7 99   my rating + teacherF
+        8 Land Of Oz        06-01-2023_23:30 8 9   my rating ++++ parentA
     */
     public void viewDiaryBySearchAny(View... view) {
-        String sch = text(search);
-        getSelectedIds();
-        if(sch.isEmpty()){
+        String srch = text(search);
+        if(srch.isEmpty()){
             viewSelectedDiary();
+            bringBackPreviousInputs();
         } else {
             String data = "";
-            data = helper.selectByPageRange(sch);
+            data = helper.selectByPageRange(srch);
             if(data.isEmpty()){
-                data = helper.selectByIds(sch);
+                data = helper.selectByIds(srch);
             }
-            if(data.isEmpty() && Helper.isInt(sch)) {
-                data = helper.getById(sch);
+            if(data.isEmpty() && isInt(srch)) {
+                data = helper.getById(srch);
             }
             if(data.isEmpty()) {
-                data = helper.searchAny(sch);
+                data = helper.searchAny(srch);
             }
             if(data.isEmpty()){
                 viewSelectedDiary();
             } else {
                 diaryView.setText(data);
-                int idx = data.indexOf(" ");
-                String id = data.split(" ")[0];
-                id = data.substring(0, idx);
-                id = Helper.idOfRecord(data);
-                diaryId.setText(id);
+                diaryId.setText(idOfRecord(data));
+                autoFill();
             }
         }
     }
@@ -305,9 +348,9 @@ public class MainActivity extends AppCompatActivity {
             viewSelectedDiary();
         } else {
             data = helper.getCsvByIds(sch);
-            Helper.toast(this, ""+data);
+            toast(this, ""+data);
             if(!data.isEmpty()) return data;
-            if(data.isEmpty() && Helper.isInt(sch)) {
+            if(data.isEmpty() && isInt(sch)) {
                 data = helper.getByIdInFormat(sch);
             }
             if(data.isEmpty()){
@@ -330,7 +373,7 @@ public class MainActivity extends AppCompatActivity {
         String[] records = diary.split("\n");
         String ids = "";
         for (int i=0; i<records.length; i++){
-            records[i] = Helper.idOfRecord(records[i]);
+            records[i] = idOfRecord(records[i]);
         }
         ids = Arrays.toString(records);
         ids = ids.replace("[","").replace("]","");
@@ -344,9 +387,9 @@ public class MainActivity extends AppCompatActivity {
             viewSelectedDiary();
         } else {
             data = helper.getCsvByIds(sch);
-            Helper.toast(this, ""+data);
+            toast(this, ""+data);
             if(!data.isEmpty()) return data;
-            if(data.isEmpty() && Helper.isInt(sch)) {
+            if(data.isEmpty() && isInt(sch)) {
                 data = helper.getByIdInFormat(sch);
             }
             if(data.isEmpty()) {
@@ -368,7 +411,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             String data = "";
             data = helper.selectByIds(sch);
-            if(data.isEmpty() && Helper.isInt(sch)) {
+            if(data.isEmpty() && isInt(sch)) {
                 data = helper.getById(sch);
             }
             if(data.isEmpty()) {
@@ -393,13 +436,13 @@ public class MainActivity extends AppCompatActivity {
         String u5 = comments.getText().toString();
         String u6 = commentsTeacher.getText().toString();
         String msg = "Enter New "
-                +Helper.nullToStr(id,"diaryID ")
-                +Helper.nullToStr(u1,"title ")
-                +Helper.nullToStr(u2,"datetime ")
-                +Helper.nullToStr(u3,"pageFrom ")
-                +Helper.nullToStr(u4,"pageTo ")
-                +Helper.nullToStr(u5,"comments ")
-                +Helper.nullToStr(u6,"TeacherComments ");
+                +nullToStr(id,"diaryID ")
+                +nullToStr(u1,"title ")
+                +nullToStr(u2,"datetime ")
+                +nullToStr(u3,"pageFrom ")
+                +nullToStr(u4,"pageTo ")
+                +nullToStr(u5,"comments ")
+                +nullToStr(u6,"TeacherComments ");
 
         if(id.isEmpty() || u1.isEmpty() || u2.isEmpty() || u3.isEmpty() || u4.isEmpty() || u5.isEmpty() || u6.isEmpty()){
             Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
@@ -412,18 +455,10 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Unsuccessful", Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(this, "Updated", Toast.LENGTH_LONG).show();
-
                 diaryId.setText("");
             }
 
         }
-    }
-
-    public String text(EditText e){
-        return Helper.text(e);
-    }
-    public String text(TextView e){
-        return Helper.text(e);
     }
 
     public void searchScrnBtnPressed(View view){
@@ -449,8 +484,67 @@ public class MainActivity extends AppCompatActivity {
         search.setText(reply);
     }
 
-    public void emailAppChooser(Intent emailIntent){
-        Intent intent = emailIntent;
-        startActivity(Intent.createChooser(intent, "Send mail..."));
+    public boolean isAnyPreviousInputsEmpty(){
+        if(isEmpty(previousId)
+                || isEmpty(previousTitle)
+                || isEmpty(previousPageFrom)
+                || isEmpty(previousPageTo)
+                || isEmpty(previousDatetime)
+                || isEmpty(previousComments)
+                || isEmpty(previousCommentsTeacher)){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isAllPreviousInputsFilled(){
+        if(isEmpty(previousId)
+                && isEmpty(previousTitle)
+                && isEmpty(previousPageFrom)
+                && isEmpty(previousPageTo)
+                && isEmpty(previousDatetime)
+                && isEmpty(previousComments)
+                && isEmpty(previousCommentsTeacher)){
+            return false;
+        }
+        return true;
+    }
+
+
+    public void rememberInputs(){
+        previousId = text(diaryId);
+        previousTitle = text(title);
+        previousDatetime = text(datetime);
+        previousPageFrom = text(pageFrom);
+        previousPageTo = text(pageTo);
+        previousComments = text(comments);
+        previousCommentsTeacher = text(commentsTeacher);
+    }
+
+    public boolean isAllFieldsEmpty(){
+        if( isEmpty(diaryId) &&
+                isEmpty(title) &&
+                isEmpty(datetime) &&
+                isEmpty(pageFrom) &&
+                isEmpty(pageTo) &&
+                isEmpty(comments) &&
+                isEmpty(commentsTeacher)){
+            return true;
+        }
+        return false;
+    }
+
+    public void emptyAllFields(){
+        diaryId.setText("");
+        title.setText("");
+        pageFrom.setText("");
+        pageTo.setText("");
+        comments.setText("");
+        commentsTeacher.setText("");
+    }
+
+    public void viewDiaryOnStartUp(View view){
+        String data = helper.getData();
+        diaryView.setText(DiaryViewHeader+data);
     }
 }

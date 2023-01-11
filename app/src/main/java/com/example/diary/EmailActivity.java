@@ -6,6 +6,7 @@
 
 package com.example.diary;
 
+import static com.example.diary.Helper.*;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,14 +25,13 @@ public class EmailActivity extends AppCompatActivity{
     EditText emailEdit;
     TextView diaryView;
     Button emailBtn;
-//    Button csvBtn;
-//    Button jsonBtn;
     CheckBox csvBtn;
     CheckBox jsonBtn;
     String email = "a@gmail.com";
     String subject = "Diary Data";
     String body = "\n";
     String ids;
+    String diarySelected;
     final String DiaryCSVHeader = "id,title,datetime,pageFrom,pageTo,comments,teacherComments";
     static final DiaryDbAdapter DB = MainActivity.HELPER;
     String jsonData;
@@ -42,8 +42,6 @@ public class EmailActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mail);
         emailBtn = (Button) findViewById(R.id.emailButton2);
-//        csvBtn = (Button) findViewById(R.id.csvBtn);
-//        jsonBtn = (Button) findViewById(R.id.jsonBtn);
         csvBtn = (CheckBox) findViewById(R.id.csvBtn);
         jsonBtn = (CheckBox) findViewById(R.id.jsonBtn);
         emailEdit = (EditText) findViewById(R.id.emailEdit);
@@ -53,15 +51,13 @@ public class EmailActivity extends AppCompatActivity{
         emailEdit.setHint(email);
         subjectEdit.setHint(subject);
         bodyEdit.setHint("Email body");
-//        diaryView.setText(DiaryCSVHeader+"\n"+MainActivity.HELPER.getDataOfficialFormat());
-        String reply = getIntent().getStringExtra("diarySelected");
+        diarySelected = getIntent().getStringExtra("diarySelected");
         ids = getIntent().getStringExtra("diaryIdsSelected");
-        diaryView.setText(DiaryCSVHeader+"\n"+reply);
+        diaryView.setText(DiaryCSVHeader+"\n"+diarySelected);
         jsonData = new StringBuilder().append(DB.getJsonByIds(ids)).append("\n").toString();
         csvData = new StringBuilder().append(DiaryCSVHeader).append("\n").append(DB.getCsvByIds(ids)).append("\n").toString();
 
         csvBtn.setChecked(true);
-//        csvBtn.performClick();
         csvBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -89,10 +85,10 @@ public class EmailActivity extends AppCompatActivity{
         emailBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                email = (Helper.orElseStr(Helper.text(emailEdit),"a@gmail.com"));
-                subject = (Helper.orElseStr(Helper.text(subjectEdit),"Diary Data Report"));
-                body = Helper.text(bodyEdit);
-                body = Helper.text(diaryView);
+                email = (orElseStr(text(emailEdit),"a@gmail.com"));
+                subject = (orElseStr(text(subjectEdit),"Diary Data Report"));
+                body = text(bodyEdit);
+                body = text(diaryView);
                 Intent intent = new Intent(Intent.ACTION_SENDTO);
                 intent.setData(Uri.parse("mailto:"));
                 intent.putExtra(Intent.EXTRA_EMAIL, new String[]{ email });
@@ -128,6 +124,10 @@ public class EmailActivity extends AppCompatActivity{
         replyIntent.putExtra("ReturnedMessage", ReturnMessage);
         setResult(RESULT_OK, replyIntent);
         finish();
+    }
+
+    public void csvBtnPerformClick(){
+        csvBtn.performClick();
     }
 }
 
