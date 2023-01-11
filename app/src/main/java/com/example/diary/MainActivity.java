@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -18,6 +19,14 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -50,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
     String previousPageTo = "";
     String previousComments = "";
     String previousCommentsTeacher = "";
+    static String GOOGLE_BOOK_API = "https://www.googleapis.com/books/v1/volumes?q=";
+    String url = "";
     int isYes = 0;
     final String DiaryViewHeader = "ID Title Date Page Comments TeacherComments\n";
     final String DiaryCSVHeader = "id,title,datetime,pageFrom,pageTo,comments,teacherComments";
@@ -81,6 +92,10 @@ public class MainActivity extends AppCompatActivity {
         previousDatetime = text(datetime);
         viewSelectedDiary();
         Log.d(TAG, text(diaryView));
+        url = GOOGLE_BOOK_API+"oz";
+        new JsonTask3().execute();
+//        new JsonTask().execute(url);
+
         diaryId.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
             @Override public void afterTextChanged(Editable editable) {}
@@ -300,8 +315,8 @@ public class MainActivity extends AppCompatActivity {
         .setNegativeButton(android.R.string.no, null).show();
     }
 
-    /*  Search by pageRange eg 1 88
-        search by Ids eg 3,6,9
+    /*  Search by pageRange eg 2 9
+        search by Ids eg 3,6,9 (select multiple then email) (CSV & JSON option on Email Screen)
         search by book, date, comments
 
         Sample data
@@ -546,5 +561,62 @@ public class MainActivity extends AppCompatActivity {
     public void viewDiaryOnStartUp(View view){
         String data = helper.getData();
         diaryView.setText(DiaryViewHeader+data);
+    }
+
+    class JsonTask3 extends AsyncTask<Void, Void, JSONObject>
+    {
+        @Override
+        protected JSONObject doInBackground(Void... params)
+        {
+            String str= url;
+            URLConnection urlConn = null;
+            BufferedReader bufferedReader = null;
+            try
+            {
+                URL url = new URL(str);
+//            url = new URL(urll);
+                urlConn = url.openConnection();
+                bufferedReader = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
+
+                StringBuffer stringBuffer = new StringBuffer();
+                String line;
+                while ((line = bufferedReader.readLine()) != null)
+                {
+                    stringBuffer.append(line);
+                }
+
+                return new JSONObject(stringBuffer.toString());
+            }
+            catch(Exception ex)
+            {
+                Log.e("App", "yourDataTask", ex);
+                return null;
+            }
+            finally
+            {
+                if(bufferedReader != null)
+                {
+                    try {
+                        bufferedReader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject response)
+        {
+            if(response != null)
+            {
+                try {
+                    Log.e("App", "Success: " + response.getString("yourJsonElement") );
+                } catch (JSONException ex) {
+                    Log.e("App", "Failure", ex);
+                }
+            }
+            diaryView.setText(response.toString());
+        }
     }
 }

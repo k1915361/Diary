@@ -167,6 +167,16 @@ public class Helper {
         return true;
     }
 
+    public static boolean isInt(Object o){
+        if (o == null) return false;
+        try{
+            Integer.parseInt(o.toString());
+        } catch(Exception e){
+            return false;
+        }
+        return false;
+    }
+
     public static boolean isNumeric(String s){
         if(s == null) return false;
         try {
