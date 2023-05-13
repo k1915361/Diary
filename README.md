@@ -1,2 +1,6 @@
 # Diary
- Reading Diary App for Primary School. Android Java.
+Reading Diary android App for Primary School using Java.
+ 
+SQLite local diary database.
+ 
+Google book API for book details and ISBN codes.
